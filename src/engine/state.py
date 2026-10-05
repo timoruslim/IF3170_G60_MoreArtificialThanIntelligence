@@ -9,6 +9,13 @@ class Placement:
       self.z = z
       self.orientation = orientation
 
+   def __str__(self):
+      if self.truck_id is None:
+         return "Unassigned"
+      return f"Truck {self.truck_id} at ({self.x}, {self.y}, {self.z})"
+
+   __repr__ = __str__
+
 class State:
    
    def __init__(self, packages, trucks):
@@ -40,5 +47,13 @@ class State:
    def copy(self):
       new_state = State(self.packages, self.trucks)
       new_state.placements = copy.deepcopy(self.placements)
-      
       return new_state
+
+   def __str__(self):
+      result = "State:\n"
+      for package in self.packages:
+         placement = self.placements[package.id]
+         result += f"  {str(package)} -> {str(placement)}\n"
+      return result
+
+   __repr__ = __str__

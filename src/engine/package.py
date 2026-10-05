@@ -21,3 +21,8 @@ class Package:
          (h, l, w)
       ]
       return orientations[orientation]
+
+   def __str__(self):
+      return f"Package {self.id} (dim={self.width}x{self.length}x{self.height}, weight={self.weight}, value={self.value}, fragile={self.is_fragile}, eta={self.eta})"
+
+   __repr__ = __str__
