@@ -11,6 +11,15 @@ class Placement:
       self.z = z
       self.orientation = orientation
 
+   def copy(self):
+      return Placement(
+         truck_id = self.truck_id,
+         x = self.x,
+         y = self.y,
+         z = self.z,
+         orientation = self.orientation
+      )
+
    def __str__(self):
       if self.truck_id is None:
          return "Unassigned"
@@ -87,6 +96,12 @@ class State:
          if (placement := self.placements.get(package.id)) is not None and placement.truck_id == truck_id
       ]
 
+   def get_packages_not_outside(self):
+      return [
+         package for package in self.packages
+         if self.placements[package.id].truck_id != None
+      ]
+
    def get_packages_outside(self):
       return [
          package for package in self.packages
@@ -95,7 +110,7 @@ class State:
 
    def copy(self):
       new_state = State(self.packages, self.trucks)
-      new_state.placements = copy.deepcopy(self.placements)
+      new_state.placements = {package_id: placement.copy() for package_id, placement in self.placements.items()}
       return new_state
 
    def __str__(self):
