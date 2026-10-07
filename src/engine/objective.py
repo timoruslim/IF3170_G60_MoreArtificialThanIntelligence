@@ -2,7 +2,7 @@ from .constraints import is_valid
 
 class ObjectiveFunction:
    def evaluate(self, state):
-      return 0.0
+      raise NotImplementedError
 
 class MaxValueObjective(ObjectiveFunction):
    def __init__(self, penalty=-float('inf')):

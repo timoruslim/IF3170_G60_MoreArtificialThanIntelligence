@@ -1,4 +1,3 @@
-import copy
 import random
 from .constraints import is_valid
 
