@@ -11,8 +11,8 @@ class Result:
       self.metadata = metadata
 
 class Solver():
-   def __init__(self, objective):
-      self.objective = objective
+   def __init__(self, objective_function):
+      self.objective = objective_function.evaluate
    
    def solve(self, initial_state):
       raise NotImplementedError
