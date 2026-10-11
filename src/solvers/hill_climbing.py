@@ -121,7 +121,7 @@ class Stochastic(HillClimbing):
                 random_successor_iterations += 1
             
             if random_successor_iterations >= self.max_random_successor_iterations:
-                random_successor_per_value.append(random_successor_iterations+1)
+                random_successor_per_value.append(random_successor_iterations)
                 break
             
             objective_history.append(self.objective(current_state))
