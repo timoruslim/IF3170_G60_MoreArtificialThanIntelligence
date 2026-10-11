@@ -63,7 +63,7 @@ def get_random_neighbor(state):
 
       # Rotate
       case 2:
-         package = random.choice(state.get_packages_not_outside) 
+         package = random.choice(state.get_packages_not_outside()) 
          
          new_orientation = random.randint(0, 5)
          return rotate_package(state, package.id, new_orientation)
