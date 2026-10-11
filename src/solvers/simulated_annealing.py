@@ -69,7 +69,7 @@ class SimulatedAnnealing(Solver):
 
          next_state = get_random_neighbor(current_state)
          dE = self.objective(next_state) - self.objective(current_state)
-         p = min(1, math.exp(dE / T))
+         p = 1.0 if dE > 0 else math.exp(dE / T)
 
          if random.random() < p:
             current_state = next_state
