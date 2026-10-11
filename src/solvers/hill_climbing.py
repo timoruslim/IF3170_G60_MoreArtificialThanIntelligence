@@ -105,6 +105,7 @@ class Stochastic(HillClimbing):
         t = 0
         random_successor_iterations = 0
         objective_history = [self.objective(current_state)]
+        random_successor_per_value = []
 
         start_time = time.perf_counter()
 
@@ -114,6 +115,7 @@ class Stochastic(HillClimbing):
             if neighbor_objective > current_objective:
                 current_state = neighbor_state
                 current_objective = neighbor_objective
+                random_successor_per_value.append(random_successor_iterations+1)
                 random_successor_iterations = 0 # reset random_successor_iterations counter if neighbor_state > current_state
             else:
                 random_successor_iterations += 1
@@ -132,7 +134,7 @@ class Stochastic(HillClimbing):
             objective_history, 
             t, 
             runtime,
-            random_successor_iterations=random_successor_iterations
+            random_successor_iterations=random_successor_per_value
         )
 
 class RandomRestart(HillClimbing):
