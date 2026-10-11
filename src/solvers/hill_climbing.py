@@ -156,7 +156,7 @@ class RandomRestart(HillClimbing):
         start_time = time.perf_counter()
 
         for restart in range(1, self.max_restarts + 1):
-            initial_state = State.initialize_placements("random") # initialize random starting state
+            initial_state = State.initialize_placements("random_feasible") # initialize random starting state
             starts.append(initial_state)
             for iteration in range(1, self.max_iterations_per_restart + 1):
                 current_state = initial_state
