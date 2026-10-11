@@ -93,3 +93,46 @@ class SidewaysMove(HillClimbing):
             runtime,
             sideways_moves=sideways_move
         )
+
+class Stochastic(HillClimbing):
+    def __init__(self, objective, max_random_successor_iterations=10, max_iterations=10000):
+        super().__init__(objective)
+        self.max_random_successor_iterations = max_random_successor_iterations
+        self.max_iterations = max_iterations
+
+    def solve(self, initial_state):
+        current_state = initial_state
+        current_objective = self.objective(current_state)
+
+        t = 0
+        random_successor_iterations = 0
+        objective_history = [self.objective(current_state)]
+
+        start_time = time.perf_counter()
+
+        for t in range(1, self.max_iterations + 1):
+            neighbor_state = get_random_neighbor(current_state) # awake a random successor of the current state
+            neighbor_objective = self.objective(neighbor_state) # returns the successor value
+            if neighbor_objective > current_objective:
+                current_state = neighbor_state
+                current_objective = neighbor_objective
+                random_successor_iterations = 0 # reset random_successor_iterations counter if neighbor_state > current_state
+            else:
+                random_successor_iterations += 1
+            
+            if random_successor_iterations >= self.max_random_successor_iterations:
+                break
+            
+            objective_history.append(self.objective(current_state))
+
+        end_time = time.perf_counter()
+        runtime = end_time - start_time
+
+        return Result(
+            initial_state, 
+            current_state, 
+            objective_history, 
+            t, 
+            runtime,
+            random_successor_iterations=random_successor_iterations
+        )
