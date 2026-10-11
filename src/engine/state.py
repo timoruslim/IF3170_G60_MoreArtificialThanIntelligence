@@ -1,7 +1,7 @@
 import random
 from .constraints import is_valid
 
-class Placement:
+class Placement: # which truck, where in truck, and orientation
 
    def __init__(self, truck_id=None, x=0, y=0, z=0, orientation=0):
       self.truck_id = truck_id
@@ -26,12 +26,12 @@ class Placement:
 
    __repr__ = __str__
 
-class State:
+class State: 
    
    def __init__(self, packages, trucks, init="outside"):
       self.packages = packages
       self.trucks = trucks
-      self.placements = {}
+      self.placements = {} # Dictionary, key = package_id, value = placement
       self.initialize_placements(init)
 
    def initialize_placements(self, init):
