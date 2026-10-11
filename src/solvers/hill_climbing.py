@@ -1,7 +1,5 @@
 from .base import Solver, Result
 from ..engine import *
-import math
-import random
 import time
 
 class HillClimbing(Solver):
@@ -135,4 +133,61 @@ class Stochastic(HillClimbing):
             t, 
             runtime,
             random_successor_iterations=random_successor_iterations
+        )
+
+class RandomRestart(HillClimbing):
+    def __init__(self, objective, max_restarts=15, max_iterations_per_restart=100):
+        super().__init__(objective)
+        self.max_restarts = max_restarts
+        self.max_iterations_per_restart = max_iterations_per_restart
+
+    def solve(self, initial_state):
+        starts = []
+        best_state = []
+        best_objective = []
+
+        restarts = 0
+        iteration_per_restart = []
+        objective_history = [[-float('inf') for iteration in range(1, self.max_iterations_per_restart + 1)] for restart in range(1, self.max_restarts + 1)]
+
+        start_time = time.perf_counter()
+
+        for restart in range(1, self.max_restarts + 1):
+            initial_state = State.initialize_placements("random") # initialize random starting state
+            starts.append(initial_state)
+            for iteration in range(1, self.max_iterations_per_restart + 1):
+                current_state = initial_state
+                current_objective = self.objective(current_state)
+                
+                successor = get_all_neighbors(current_state) # awake all successors of the current state
+                successor_value = [self.objective(successor[i]) for i in range(len(successor))] # returns all successors values
+                neighbor_state = successor[successor_value.index(max(successor_value))] # returns successor with the highest value as neighbor
+                neighbor_objective = self.objective(neighbor_state) # returns neighbor value
+            
+                if neighbor_objective > current_objective:
+                    current_state = neighbor_state
+                    current_objective = neighbor_objective
+                else:
+                    break
+
+                objective_history[restart-1][iteration-1] = self.objective(current_state)
+
+            best_state.append(current_state)
+            best_objective.append(self.objective(current_state))
+            restarts += 1
+            iteration_per_restart.append(iteration)
+
+        final_state = best_state[best_objective.index(max(best_objective))] # returns the best state from all restarts
+        final_objective = self.objective(final_state)
+        end_time = time.perf_counter()
+        runtime = end_time - start_time
+        
+        return Result(
+            starts, 
+            final_state, 
+            best_objective, 
+            iteration_per_restart, 
+            runtime,
+            total_restarts = restarts,
+            final_objective_value = final_objective
         )
