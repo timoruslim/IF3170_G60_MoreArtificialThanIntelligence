@@ -115,13 +115,13 @@ class Stochastic(HillClimbing):
             if neighbor_objective > current_objective:
                 current_state = neighbor_state
                 current_objective = neighbor_objective
-                random_successor_per_value.append(random_successor_iterations)
+                random_successor_per_value.append(random_successor_iterations+1)
                 random_successor_iterations = 0 # reset random_successor_iterations counter if neighbor_state > current_state
             else:
                 random_successor_iterations += 1
             
             if random_successor_iterations >= self.max_random_successor_iterations:
-                random_successor_per_value.append(random_successor_iterations)
+                random_successor_per_value.append(random_successor_iterations+1)
                 break
             
             objective_history.append(self.objective(current_state))
