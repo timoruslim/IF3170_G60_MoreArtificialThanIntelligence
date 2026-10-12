@@ -139,58 +139,72 @@ class Stochastic(HillClimbing):
         )
 
 class RandomRestart(HillClimbing):
-    def __init__(self, objective, max_restarts=15, max_iterations_per_restart=100):
+    def __init__(self, objective, max_restarts=15, max_iterations_per_restart=100, initial_state=None):
         super().__init__(objective)
         self.max_restarts = max_restarts
         self.max_iterations_per_restart = max_iterations_per_restart
+        if initial_state is None:
+            raise ValueError("initial_state is required")
+        self.initial_state = initial_state
 
-    def solve(self, initial_state):
+    def solve(self):
         starts = []
-        best_state = []
-        best_objective = []
+        best_state = None
+        best_objective = None
 
         restarts = 0
         iteration_per_restart = []
-        objective_history = [[-float('inf') for iteration in range(1, self.max_iterations_per_restart + 1)] for restart in range(1, self.max_restarts + 1)]
+        objective_history = []
 
         start_time = time.perf_counter()
 
-        for restart in range(1, self.max_restarts + 1):
-            initial_state = State.initialize_placements(self, init="random_feasible") # initialize random starting state
-            starts.append(initial_state)
-            for iteration in range(1, self.max_iterations_per_restart + 1):
-                current_state = initial_state
-                current_objective = self.objective(current_state)
-                
+        for restart in range(self.max_restarts):
+            if restart == 0:
+                start_state = self.initial_state.copy()
+            else:
+                start_state = State(
+                    self.initial_state.packages,
+                    self.initial_state.trucks,
+                    init="random_feasible",
+                )
+            starts.append(start_state.copy())
+            current_state = start_state
+            current_objective = self.objective(current_state)
+            objective_history.append(current_objective)
+            
+            iterations = 0
+            for _ in range(self.max_iterations_per_restart):
+                iterations += 1
                 successor = get_all_neighbors(current_state) # awake all successors of the current state
                 successor_value = [self.objective(successor[i]) for i in range(len(successor))] # returns all successors values
                 neighbor_state = successor[successor_value.index(max(successor_value))] # returns successor with the highest value as neighbor
                 neighbor_objective = self.objective(neighbor_state) # returns neighbor value
-            
+
                 if neighbor_objective > current_objective:
                     current_state = neighbor_state
                     current_objective = neighbor_objective
                 else:
                     break
 
-                objective_history[restart-1][iteration-1] = self.objective(current_state)
+                objective_history.append(current_objective)
 
-            best_state.append(current_state)
-            best_objective.append(self.objective(current_state))
+            if best_objective is None or current_objective > best_objective:
+                best_state = current_state
+                best_objective = current_objective
             restarts += 1
-            iteration_per_restart.append(iteration)
+            iteration_per_restart.append(iterations)
 
-        final_state = best_state[best_objective.index(max(best_objective))] # returns the best state from all restarts
-        final_objective = self.objective(final_state)
+        final_objective = best_objective
         end_time = time.perf_counter()
         runtime = end_time - start_time
         
         return Result(
             starts, 
-            final_state, 
-            best_objective, 
-            iteration_per_restart, 
+            best_state,
+            objective_history,
+            sum(iteration_per_restart),
             runtime,
-            total_restarts = restarts,
-            final_objective_value = final_objective
+            total_restarts=restarts,
+            iterations_per_restart=iteration_per_restart,
+            final_objective_value=final_objective,
         )
