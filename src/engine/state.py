@@ -95,12 +95,6 @@ class State:
          if (placement := self.placements.get(package.id)) is not None and placement.truck_id == truck_id
       ]
 
-   def get_packages_not_outside(self):
-      return [
-         package for package in self.packages
-         if self.placements[package.id].truck_id != None
-      ]
-
    def get_packages_outside(self):
       return [
          package for package in self.packages
