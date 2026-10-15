@@ -11,7 +11,7 @@ class Schedule():
    def __call__(self, t):
       raise NotImplementedError
 
-# See https://lemoine-or.github.io/MetaheuristicsPlatform/components/simulated-annealing-cooling-schedules.html?utm_source=chatgpt.com
+# See https://lemoine-or.github.io/MetaheuristicsPlatform/components/simulated-annealing-cooling-schedules.html
 
 class GeometricSchedule(Schedule):
    def __init__(self, initial_temperature, alpha):
@@ -57,7 +57,7 @@ class SimulatedAnnealing(Solver):
       current_state = initial_state
 
       t = 0
-      objective_history = [self.objective(current_state)]
+      objective_history = [self.objective.evaluate(current_state)]
       probability_history = []
 
       start_time = time.perf_counter()
@@ -68,18 +68,20 @@ class SimulatedAnnealing(Solver):
             break
 
          next_state = get_random_neighbor(current_state)
-         dE = self.objective(next_state) - self.objective(current_state)
+         dE = self.objective.evaluate(next_state) - self.objective.evaluate(current_state)
          p = 1.0 if dE > 0 else math.exp(dE / T)
 
          if random.random() < p:
             current_state = next_state
 
-         objective_history.append(self.objective(current_state))
+         objective_history.append(self.objective.evaluate(current_state))
          probability_history.append(p)
 
       end_time = time.perf_counter()
 
       return Result(
+         self.__class__.__name__,
+         self.objective.__class__.__name__,
          initial_state, 
          current_state, 
          objective_history, 
