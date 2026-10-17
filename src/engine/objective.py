@@ -19,8 +19,15 @@ class MaxValueObjective(ObjectiveFunction):
       return total_value
 
 class BonusObjective1(ObjectiveFunction):
-   def evaluate(self, state):
-      return 0.0
+    def evaluate(self, state):
+        if not is_valid(state):
+            return self.penalty
+        
+        total_value = 0.0
+        for truck in state.trucks:
+            for package, eta in state.get_packages_in_truck(truck.id):
+                total_value += package.value / (eta + 1)
+        return total_value
 
 class BonusObjective2(ObjectiveFunction):
    def evaluate(self, state):
