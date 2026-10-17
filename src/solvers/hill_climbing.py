@@ -153,7 +153,7 @@ class RandomRestart(HillClimbing):
             raise ValueError("initial_state is required")
         self.initial_state = initial_state
 
-    def solve(self, initial_state):
+    def solve(self):
         starts = []
         best_state = None
         best_objective = None
