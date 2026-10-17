@@ -14,7 +14,7 @@ def draw_package(package, x0, y0, z0, dx, dy, dz, origin=(0,0,0), color='red', o
 
    info = (
       f"<b>ID:</b> {package.id}<br>"
-      f"<b>Position in truck (x, y, z):</b> {local_x}, {local_y}, {local_z}<br>"
+      f"<b>Position in truck (x, y, z):</b> {x0 - ox}, {y0 - oy}, {z0 - oz}<br>"
       f"<b>Size:</b> {dx}x{dy}x{dz}<br>"
       f"<b>Value:</b> {package.value}<br>"
       f"<b>Weight:</b> {package.weight}<br>"
