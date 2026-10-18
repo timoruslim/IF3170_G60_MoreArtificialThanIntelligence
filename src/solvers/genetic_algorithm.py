@@ -13,7 +13,7 @@ class GeneticAlgorithm(Solver):
         self.population_size = population_size
         self.max_generations = max_generations
 
-    def _init_population(self, initial_state):
+    def create_population(self, initial_state):
         return [
             State(initial_state.packages, initial_state.trucks, init="random_feasible")
             for i in range(self.population_size)
@@ -61,7 +61,7 @@ class GeneticAlgorithm(Solver):
         return state
 
     def solve(self, initial_state):
-        population = self._init_population(initial_state)
+        population = self.create_population(initial_state)
         scores = [self.objective.evaluate(state) for state in population]
         best_index = scores.index(max(scores))
         best_state = population[best_index].copy()
