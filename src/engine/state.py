@@ -44,7 +44,7 @@ class State:
          
          case "random":
             for package in self.packages:
-               truck = random.choice(self.trucks + [None])
+               truck = random.choice(self.trucks + [None]) 
                if truck is None:
                   self.placements[package.id] = Placement()
                else:

@@ -99,6 +99,7 @@ class GeneticAlgorithm(Solver):
             self.max_generations,
             end_time - start_time,
             population_size=self.population_size,
+            max_generations=self.max_generations,
             max_history=max_history,
             average_history=average_history,
             final_objective_value=best_objective,

@@ -32,7 +32,7 @@ class SteepestAscent(HillClimbing):
             else:
                 break
             
-            objective_history.append(self.objective.evaluate(current_state))
+            objective_history.append(current_objective)
 
         end_time = time.perf_counter()
         runtime = end_time - start_time
@@ -80,7 +80,7 @@ class SidewaysMove(HillClimbing):
             else:
                 break
             
-            objective_history.append(self.objective.evaluate(current_state))
+            objective_history.append(current_objective)
 
         end_time = time.perf_counter()
         runtime = end_time - start_time
@@ -97,7 +97,7 @@ class SidewaysMove(HillClimbing):
         )
 
 class Stochastic(HillClimbing):
-    def __init__(self, objective, max_random_successor_iterations=10, max_iterations=10000):
+    def __init__(self, objective, max_random_successor_iterations=100, max_iterations=10000):
         super().__init__(objective)
         self.max_random_successor_iterations = max_random_successor_iterations
         self.max_iterations = max_iterations
@@ -116,6 +116,7 @@ class Stochastic(HillClimbing):
         for t in range(1, self.max_iterations + 1):
             neighbor_state = get_random_neighbor(current_state) # awake a random successor of the current state
             neighbor_objective = self.objective.evaluate(neighbor_state) # returns the successor value
+            
             if neighbor_objective > current_objective:
                 current_state = neighbor_state
                 current_objective = neighbor_objective
@@ -128,7 +129,7 @@ class Stochastic(HillClimbing):
                 random_successor_per_value.append(random_successor_iterations)
                 break
             
-            objective_history.append(self.objective.evaluate(current_state))
+            objective_history.append(current_objective)
 
         end_time = time.perf_counter()
         runtime = end_time - start_time
@@ -145,42 +146,42 @@ class Stochastic(HillClimbing):
         )
 
 class RandomRestart(HillClimbing):
-    def __init__(self, objective, max_restarts=15, max_iterations_per_restart=100, initial_state=None):
+    def __init__(self, objective, max_restarts=15, max_iterations_per_restart=100):
         super().__init__(objective)
         self.max_restarts = max_restarts
         self.max_iterations_per_restart = max_iterations_per_restart
-        if initial_state is None:
-            raise ValueError("initial_state is required")
-        self.initial_state = initial_state
 
-    def solve(self):
+    def solve(self, initial_state):
         starts = []
         best_state = None
         best_objective = None
 
         restarts = 0
         iteration_per_restart = []
-        objective_history = []
+        objective_histories = []
+        runtime_history = []
+        best_objective_history = []
 
-        start_time = time.perf_counter()
+        for restarts in range(1, self.max_restarts+1):
 
-        for restart in range(self.max_restarts):
-            if restart == 0:
-                start_state = self.initial_state.copy()
+            start_time = time.perf_counter()
+
+            if restarts == 1:
+                start_state = initial_state.copy()
             else:
                 start_state = State(
-                    self.initial_state.packages,
-                    self.initial_state.trucks,
+                    initial_state.packages,
+                    initial_state.trucks,
                     init="random_feasible",
                 )
+            
             starts.append(start_state.copy())
             current_state = start_state
             current_objective = self.objective.evaluate(current_state)
-            objective_history.append(current_objective)
+            objective_history = [current_objective]
             
-            iterations = 0
-            for _ in range(self.max_iterations_per_restart):
-                iterations += 1
+            i = None
+            for i in range(1, self.max_iterations_per_restart+1):
                 successor = get_all_neighbors(current_state) # awake all successors of the current state
                 successor_value = [self.objective.evaluate(successor[i]) for i in range(len(successor))] # returns all successors values
                 neighbor_state = successor[successor_value.index(max(successor_value))] # returns successor with the highest value as neighbor
@@ -194,25 +195,28 @@ class RandomRestart(HillClimbing):
 
                 objective_history.append(current_objective)
 
+            end_time = time.perf_counter()
+            runtime = end_time - start_time
+            runtime_history.append(runtime)
+            iteration_per_restart.append(i)
+            objective_histories.append(objective_history)
+
             if best_objective is None or current_objective > best_objective:
                 best_state = current_state
                 best_objective = current_objective
-            restarts += 1
-            iteration_per_restart.append(iterations)
-
-        final_objective = best_objective
-        end_time = time.perf_counter()
-        runtime = end_time - start_time
+                best_objective_history = objective_history
         
         return Result(
             self.__class__.__name__,
             self.objective.__class__.__name__,
-            starts, 
+            initial_state, 
             best_state,
-            objective_history,
+            best_objective_history,
             sum(iteration_per_restart),
-            runtime,
+            sum(runtime_history),
             total_restarts=restarts,
             iterations_per_restart=iteration_per_restart,
-            final_objective_value=final_objective,
+            initial_state_history=starts,
+            all_objective_history=objective_histories,
+            runtime_history=runtime_history
         )

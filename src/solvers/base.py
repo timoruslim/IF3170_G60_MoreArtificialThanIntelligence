@@ -15,8 +15,8 @@ class Result:
    def __str__(self):
       lines = []
       
-      border = "=" * 50
-      divider = "-" * 50
+      border = "=" * 100
+      divider = "-" * 100
       
       lines.append(border)
 
@@ -43,7 +43,10 @@ class Result:
             if isinstance(value, float):
                formatted_val = f"{value:.3f}"
             elif isinstance(value, list):
-               formatted_val = f"[{len(value)} values]"
+               if len(value) > 10: 
+                  formatted_val = f"[{len(value)} values]"
+               else: 
+                  formatted_val = value
             else:
                formatted_val = str(value)
                
