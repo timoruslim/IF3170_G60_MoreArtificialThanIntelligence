@@ -31,4 +31,13 @@ class BonusObjective1(ObjectiveFunction):
 
 class BonusObjective2(ObjectiveFunction):
    def evaluate(self, state):
-      return 0.0
+      if not is_valid(state):
+         return self.penalty
+ 
+      total_value = 0.0
+      for truck in state.trucks:
+         for package, placement in state.get_packages_in_truck(truck.id):
+            w, l, h = package.get_dimensions(placement.orientation)
+            height_ratio = (placement.z + h / 2) / truck.height
+            total_value += package.value * (1 - height_ratio)
+      return total_value

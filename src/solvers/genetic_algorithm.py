@@ -2,6 +2,7 @@ from .base import Solver, Result
 from ..engine.state import State, Placement
 from ..engine.constraints import is_valid
 from ..engine import get_random_neighbor
+import math
 import random
 import time
 
@@ -18,11 +19,22 @@ class GeneticAlgorithm(Solver):
             for i in range(self.population_size)
         ]
 
+    def finite(self, scores):
+        return [score for score in scores if math.isfinite(score)]
+
+    def avg(self, scores):
+        finite = self.finite(scores)
+        return sum(finite) / len(finite) if finite else float("nan")
+
     def select(self, population, scores):
-        min_score = min(scores)
-        weights = [score - min_score for score in scores]
-        if sum(weights) == 0:
+        finite = self.finite(scores)
+        if not finite:
             return random.choice(population)
+        min_score = min(finite)
+        weights = [
+            (score - min_score) + 1e-6 if math.isfinite(score) else 0.0
+            for score in scores
+        ]
         return random.choices(population, weights=weights, k=1)[0]
 
     def crossover(self, parent_a, parent_b):
@@ -41,8 +53,12 @@ class GeneticAlgorithm(Solver):
                 child.set_placement(package.id, Placement())
         return child
 
-    def mutate(self, state):
-        return get_random_neighbor(state)
+    def mutate(self, state, max_attempts=10):
+        for _ in range(max_attempts):
+            neighbor = get_random_neighbor(state)
+            if is_valid(neighbor):
+                return neighbor
+        return state
 
     def solve(self, initial_state):
         population = self._init_population(initial_state)
@@ -51,7 +67,8 @@ class GeneticAlgorithm(Solver):
         best_state = population[best_index].copy()
         best_objective = scores[best_index]
         objective_history = [best_objective]
-        average_history = [sum(scores) / len(scores)]
+        max_history = [max(scores)]
+        average_history = [self.avg(scores)]
         start_time = time.perf_counter()
         for _ in range(self.max_generations):
             new_population = []
@@ -69,7 +86,8 @@ class GeneticAlgorithm(Solver):
                 best_objective = generation_best
                 best_state = population[generation_best_index].copy()
             objective_history.append(best_objective)
-            average_history.append(sum(scores) / len(scores))
+            max_history.append(generation_best)
+            average_history.append(self.avg(scores))
         end_time = time.perf_counter()
 
         return Result(
@@ -81,6 +99,7 @@ class GeneticAlgorithm(Solver):
             self.max_generations,
             end_time - start_time,
             population_size=self.population_size,
+            max_history=max_history,
             average_history=average_history,
             final_objective_value=best_objective,
         )
