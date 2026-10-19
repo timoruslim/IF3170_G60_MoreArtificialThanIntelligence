@@ -5,6 +5,8 @@ from .constraints import is_valid, get_bounding_box
 from .objective import (
    ObjectiveFunction,
    MaxValueObjective,
+   TimeAwareObjective, 
+   GravityAwareObjective
 )
 from src.engine.moves import (
    swap_packages,
