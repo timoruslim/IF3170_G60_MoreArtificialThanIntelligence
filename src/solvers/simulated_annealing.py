@@ -46,6 +46,29 @@ class LogarithmicSchedule(Schedule):
    def __call__(self, t):
       return self.initial_temperature * self.c / math.log(t + self.t0)   
 
+def count_local_optimum(arr):
+
+   # Compress array
+   b = [arr[0]]
+   for x in arr[1:]:
+      if x != b[-1]:
+         b.append(x)
+
+   m = len(b)
+   if m == 1:
+      return 1 
+
+   # Count interior local optimum
+   count = sum(1 for i in range(1, m - 1) if b[i - 1] < b[i] > b[i + 1])
+
+   # Count boundary local optimum 
+   if b[0] > b[1]:
+      count += 1
+   if b[-1] > b[-2]:
+      count += 1
+
+   return count
+
 class SimulatedAnnealing(Solver):
    def __init__(self, objective, schedule, minimum_temperature=1e-8, max_iterations=10000):
       super().__init__(objective)
@@ -87,5 +110,6 @@ class SimulatedAnnealing(Solver):
          objective_history, 
          t, 
          end_time - start_time, 
-         probability_history=probability_history
+         probability_history=probability_history,
+         local_optima_count=count_local_optimum(objective_history)
       )

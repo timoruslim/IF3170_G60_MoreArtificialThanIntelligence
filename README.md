@@ -148,8 +148,8 @@ draw_state(result)
 | Nama                     | NIM      | Pembagian Tugas                                      |
 | ------------------------ | -------- | ---------------------------------------------------- |
 | Timothy Niels Ruslim     | 10123053 | representasi persoalan, simulated annealing, laporan |
-| Theodore Marvel Suranton | 10623061 | hill climbing, analisis perbandingan laporan         |
-| Qodri Azkarayan          | 10823501 | genetic algorithm, bonus objektif laporan            |
+| Theodore Marvel Suranton | 10623061 | hill climbing, analisis perbandingan, laporan        |
+| Qodri Azkarayan          | 10823501 | genetic algorithm, bonus objektif, laporan           |
 
 Bukti dapat dilihat dari sejarah _commits_.
 

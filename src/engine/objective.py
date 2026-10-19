@@ -21,7 +21,7 @@ class MaxValueObjective(ObjectiveFunction):
             total_value += package.value
       return total_value
 
-class MinETAObjective(ObjectiveFunction):
+class TimeAwareObjective(ObjectiveFunction):
    def __init__(self, penalty=-float('inf')):
       super().__init__(penalty)
    
@@ -35,7 +35,7 @@ class MinETAObjective(ObjectiveFunction):
             total_value += package.value / (package.eta + 1)
       return total_value
 
-class MaxHeightRatioObjective(ObjectiveFunction):
+class GravityAwareObjective(ObjectiveFunction):
    def __init__(self, penalty=-float('inf')):
       super().__init__(penalty)
    
