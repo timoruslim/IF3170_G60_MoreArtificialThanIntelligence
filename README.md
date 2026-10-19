@@ -10,7 +10,7 @@
 
 ## 📘 Deskripsi
 
-Di sini, kami membuat package `Python` untuk mengimplementasikan algoritma **local search** termasuk _hill climbing_, _simulated annealing_, dan _genetic algorithm_ untuk menyelesaikan masalah penempatan paket-paket dalam truk. Diimplementasikan representasi lingkungan yang meliputi paket, truk, _state_, batasan, aksi, dan fungsi objektif dengan pendekatan _object-oriented programming_ dan visual. Lalu, diimplementasikan algoritma _hill climbing_, _simulated annealing_, dan _genetic algorithm_ mengikuti [Russel and Norvig (2021)](https://aima.cs.berkeley.edu/). Akhirnya, dilakukan analisis hasil dan perbandingan algoritma dalam menyelesaikan persoalan tersebut.
+Di sini, kami membuat package `Python` untuk mengimplementasikan algoritma **local search** termasuk _hill climbing_, _simulated annealing_, dan _genetic algorithm_ untuk menyelesaikan masalah penempatan paket-paket dalam truk. Diimplementasikan representasi lingkungan yang meliputi paket, truk, _state_, batasan, aksi, dan fungsi objektif dengan pendekatan _object-oriented programming_ dan visual. Lalu, diimplementasikan algoritma _hill climbing_, _simulated annealing_, dan _genetic algorithm_ mengikuti [Russel and Norvig (2021)](https://aima.cs.berkeley.edu/). Akhirnya, dilakukan analisis hasil dan perbandingan algoritma dalam menyelesaikan persoalan tersebut. Pembahasan selengkapnya dapat dilihat di [laporan](docs/IF3170_G60_MoreArtificialThanIntelligence.pdf).
 
 ---
 
